@@ -36,6 +36,7 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
         }
         //2.向课程简介表中添加信息
         EduCourseDescription eduCourseDescription = new EduCourseDescription();
+        //设置描述id就是课程id
         eduCourseDescription.setId(eduCourse.getId());
         eduCourseDescription.setDescription(courseInfoVo.getDescription());
         boolean save = eduCourseDescriptionService.save(eduCourseDescription);

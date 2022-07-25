@@ -15,4 +15,5 @@ public class OneSubject {
     private String title;
     //一个一级分类里有多个二级分类
     private List<TwoSubject> children = new ArrayList<>();
+    private String name;
 }

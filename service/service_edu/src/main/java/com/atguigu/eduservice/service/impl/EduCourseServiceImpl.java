@@ -26,14 +26,15 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
     private EduCourseDescriptionService eduCourseDescriptionService;
     //添加课程信息
     @Override
-    public void saveCourseInfo(CourseInfoVo courseInfoVo) {
+    public String saveCourseInfo(CourseInfoVo courseInfoVo) {
         //1.向课程表添加课程基本信息
         EduCourse eduCourse = new EduCourse();
         BeanUtils.copyProperties(courseInfoVo, eduCourse);
         int insert = baseMapper.insert(eduCourse);
-        if (insert <= 0) {//添加失败
+        if (insert == 0) {//添加失败
             throw new GuliException(20001, "添加课程信息失败");
         }
+        String cid = eduCourse.getId();
         //2.向课程简介表中添加信息
         EduCourseDescription eduCourseDescription = new EduCourseDescription();
         //设置描述id就是课程id
@@ -43,6 +44,6 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
         if (!save) {
             throw new GuliException(20001, "课程详情信息保存失败");
         }
-
+        return cid;
     }
 }

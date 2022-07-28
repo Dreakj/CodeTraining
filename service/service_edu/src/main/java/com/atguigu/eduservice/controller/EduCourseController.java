@@ -30,8 +30,9 @@ public class EduCourseController {
     public R addCourseInfo(@ApiParam(name = "CourseInfoForm", value = "课程基本信息", required =
             true)
                            @RequestBody CourseInfoVo courseInfoVo) {
-        eduCourseService.saveCourseInfo(courseInfoVo);
-        return R.ok();
+
+        String id = eduCourseService.saveCourseInfo(courseInfoVo);
+        return R.ok().data("courseId", id);
     }
 }
 

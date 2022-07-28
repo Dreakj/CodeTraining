@@ -29,4 +29,6 @@ public class CourseInfoVo {
     private String cover;
     @ApiModelProperty(value = "课程简介")
     private String description;
+    @ApiModelProperty(value = "课程专业父级ID")
+    private String subjectParentId;
 }

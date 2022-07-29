@@ -30,6 +30,7 @@ public class EduChapterServiceImpl extends ServiceImpl<EduChapterMapper, EduChap
     List<ChapterVo> finalList = new ArrayList<>();
     @Autowired
     private EduVideoService videoService;
+
     //根据课程id查询课程大纲列表
     @Override
     public List<ChapterVo> getChapterVideoByCourseId(String courseId) {
@@ -60,7 +61,6 @@ public class EduChapterServiceImpl extends ServiceImpl<EduChapterMapper, EduChap
                     BeanUtils.copyProperties(eduVideo, eduVideo1);
                     videoVoList.add(eduVideo1);
                 }
-
             }
             chapterVo.setChildren(videoVoList);
         }

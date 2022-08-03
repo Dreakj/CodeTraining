@@ -41,7 +41,7 @@ public class EduChapterController {
     }
 
     //根据章节id查询
-    @GetMapping("getChapterInfo/{chapterId}")
+    @GetMapping("getChapterInfo/{id}")
     public R getChapterInfo(@PathVariable String id) {
         EduChapter eduChapter = chapterService.getById(id);
         return R.ok().data("chapter", eduChapter);

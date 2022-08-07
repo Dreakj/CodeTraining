@@ -23,7 +23,7 @@ export default {
         })
     },
     //修改章节
-    updateChapter2(chapter){
+    updateChapter(chapter){
         return request({
             url:'/eduservice/chapter/update',
             method:'post',

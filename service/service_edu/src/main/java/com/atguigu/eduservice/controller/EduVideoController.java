@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/eduservice/video")
+@CrossOrigin
 public class EduVideoController {
     @Autowired
     private EduVideoService videoService;
@@ -37,6 +38,18 @@ public class EduVideoController {
         return R.ok();
     }
     //修改小节
+    @PostMapping("updateVideo")
+    public R updateVideoById(@RequestBody EduVideo eduVideo) {
+        videoService.updateById(eduVideo);
+        return R.ok();
+    }
+
+    //根据小节id查询
+    @GetMapping("getVideoInfo/{id}")
+    public R getVideoById(@PathVariable String id) {
+        EduVideo eduVideo = videoService.getById(id);
+        return R.ok().data("video", eduVideo);
+    }
 
 }
 

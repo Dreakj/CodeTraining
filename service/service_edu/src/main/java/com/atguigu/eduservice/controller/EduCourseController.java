@@ -2,13 +2,17 @@ package com.atguigu.eduservice.controller;
 
 
 import com.atguigu.commonutils.R;
+import com.atguigu.eduservice.entity.EduCourse;
 import com.atguigu.eduservice.entity.vo.CourseInfoVo;
 import com.atguigu.eduservice.entity.vo.CoursePublishVo;
 import com.atguigu.eduservice.service.EduCourseService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * <p>
@@ -55,6 +59,25 @@ public class EduCourseController {
     public R getPublishCourseInfo(@PathVariable String id) {
         CoursePublishVo coursePublishVo = eduCourseService.publishCourseInfo(id);
         return R.ok().data("publishCourse", coursePublishVo);
+    }
+
+    //课程最终发布
+    //修改课程状态
+    @PostMapping("publishCourse/{id}")
+    public R publishCourse(@PathVariable String id) {
+        EduCourse eduCourse = new EduCourse();
+        eduCourse.setId(id);
+        eduCourse.setStatus("Normal");
+        eduCourseService.updateById(eduCourse);
+        return R.ok();
+    }
+
+    //课程列表显示
+    @GetMapping("findALl")
+    public R findAllCourse() {
+        QueryWrapper<EduCourse> queryWrapper = new QueryWrapper<>();
+        List<EduCourse> list = eduCourseService.list(queryWrapper);
+        return R.ok().data("items", list);
     }
 }
 

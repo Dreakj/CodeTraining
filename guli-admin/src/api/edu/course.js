@@ -29,5 +29,19 @@ export default {
             method:'post',
             data:courseInfo
         })
+    },
+    //课程确认信息
+    getPublishCourseInfo(id) {
+        return request({
+            url:'/eduservice/course/getPublishCourseInfo/'+ id,
+            method:'get',
+        })
+    },
+    //课程最终显示
+    publishCourse(id){
+        return request({
+            url:'/eduservice/course/publishCourse/'+id,
+            method:'post',
+        })
     }
 }

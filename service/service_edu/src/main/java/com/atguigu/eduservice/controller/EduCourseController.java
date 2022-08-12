@@ -29,6 +29,16 @@ public class EduCourseController {
     @Autowired
     private EduCourseService eduCourseService;
 
+    //课程列表 基本实现
+    //完善条件查询带分页 TODO
+    //课程列表显示
+    @GetMapping
+    public R getCourseList() {
+        QueryWrapper<EduCourse> queryWrapper = new QueryWrapper<>();
+        List<EduCourse> list = eduCourseService.list(queryWrapper);
+        return R.ok().data("list", list);
+    }
+
     //添加课程基本信息
     @PostMapping("addCourseInfo")
     @ApiOperation(value = "新增课程")
@@ -72,12 +82,11 @@ public class EduCourseController {
         return R.ok();
     }
 
-    //课程列表显示
-    @GetMapping("findALl")
-    public R findAllCourse() {
-        QueryWrapper<EduCourse> queryWrapper = new QueryWrapper<>();
-        List<EduCourse> list = eduCourseService.list(queryWrapper);
-        return R.ok().data("items", list);
+    //删除课程
+    @DeleteMapping("{courseId}")
+    public R deleteCourse(@PathVariable String id) {
+        eduCourseService.removeCourse(id);
+        return R.ok();
     }
 }
 

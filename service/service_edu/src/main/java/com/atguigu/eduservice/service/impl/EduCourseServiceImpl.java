@@ -1,12 +1,15 @@
 package com.atguigu.eduservice.service.impl;
 
+import com.atguigu.commonutils.R;
 import com.atguigu.eduservice.entity.EduCourse;
 import com.atguigu.eduservice.entity.EduCourseDescription;
 import com.atguigu.eduservice.entity.vo.CourseInfoVo;
 import com.atguigu.eduservice.entity.vo.CoursePublishVo;
 import com.atguigu.eduservice.mapper.EduCourseMapper;
+import com.atguigu.eduservice.service.EduChapterService;
 import com.atguigu.eduservice.service.EduCourseDescriptionService;
 import com.atguigu.eduservice.service.EduCourseService;
+import com.atguigu.eduservice.service.EduVideoService;
 import com.atguigu.servicebase.exceptionhandler.GuliException;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
@@ -25,6 +28,11 @@ import org.springframework.stereotype.Service;
 public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse> implements EduCourseService {
     @Autowired
     private EduCourseDescriptionService eduCourseDescriptionService;
+    @Autowired
+    private EduChapterService eduChapterService;
+    @Autowired
+    private EduVideoService eduVideoService;
+
     //添加课程信息
     @Override
     public String saveCourseInfo(CourseInfoVo courseInfoVo) {
@@ -47,6 +55,7 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
         }
         return cid;
     }
+
     //根据id查询课程基本信息
     @Override
     public CourseInfoVo getCourseInfo(String courseId) {
@@ -59,12 +68,13 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
         BeanUtils.copyProperties(courseDescription, eduCourse);
         return courseInfoVo;
     }
+
     //修改课程信息
     @Override
     public void updateCourseInfo(CourseInfoVo courseInfoVo) {
         //1.修改课程表
         EduCourse eduCourse = new EduCourse();
-        BeanUtils.copyProperties(courseInfoVo,eduCourse);
+        BeanUtils.copyProperties(courseInfoVo, eduCourse);
         int update = baseMapper.updateById(eduCourse);
         if (update == 0) {
             throw new GuliException(20001, "修改课程信息失败");
@@ -80,5 +90,21 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
         //调用mapper
         CoursePublishVo publishCourseInfo = baseMapper.getPublishCourseInfo(id);
         return publishCourseInfo;
+    }
+
+    //删除课程
+    @Override
+    public void removeCourse(String id) {
+        //1.根据课程id删除小节
+        eduVideoService.removeVideoByCourseId(id);
+        //2.根据课程id删除章节
+        eduChapterService.removeChapterByCourseId(id);
+        //3.根据课程id删除描述
+        eduCourseDescriptionService.removeById(id);
+        //4.根据课程id删除课程本身
+        int result = baseMapper.deleteById(id);
+        if (result == 0) {
+            throw new GuliException(20001, "删除失败");
+        }
     }
 }

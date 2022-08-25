@@ -106,10 +106,23 @@ export default {
   },
 
   methods: {
+    publish(){
+      course.publishCourse(this.courseId)
+      .then(response =>{
+        //提示
+        this.$message({
+          type:'success',
+          message:'课程发布成功!'
+        })
+        //跳转
+        this.$route.push({path:'/course/list'})
+      })
+     
+    },
     //根据课程id查询课程信息
     getCoursePublishId() {
       course.getPublishCourseInfo(this.courseId).then((response) => {
-        console.log(response.data.publishCourse)
+        // console.log(response.data.publishCourse)
         this.coursePublish = response.data.publishCourse;
       });
     },

@@ -18,7 +18,6 @@
         <p>
           {{ chapter.title }}
           <span class="acts">
-            
             <el-button type="text" @click="openVideo(chapter.id)"
               >添加小节</el-button
             >
@@ -36,9 +35,13 @@
           <li v-for="video in chapter.children" :key="video.id">
             <p>{{ video.title }}</p>
             <span class="acts">
-              <el-button style="" type="text" @click="openEditVideo()">编辑小节</el-button>
-              <el-button style="" type="text" @click="removeVideo()">删除</el-button>
-             </span>
+              <el-button style="" type="text" @click="openEditVideo()"
+                >编辑小节</el-button
+              >
+              <el-button style="" type="text" @click="removeVideo()"
+                >删除</el-button
+              >
+            </span>
           </li>
         </ul>
       </li>
@@ -87,8 +90,30 @@
             <el-radio :label="false">默认</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="上传视频">
-          <!-- TODO -->
+        
+          <el-form-item label="上传视频">
+            <el-upload
+              :on-success="handleVodUploadSuccess"
+              :on-remove="handleVodRemove"
+              :before-remove="beforeVodRemove"
+              :on-exceed="handleUploadExceed"
+              :file-list="fileList"
+              :action="BASE_API + '/admin/vod/video/upload'"
+              :limit="1"
+              class="upload-demo"
+            >
+              <el-button size="small" type="primary">上传视频</el-button>
+              <el-tooltip placement="right-end">
+                <div slot="content">
+                  最大支持1G，<br />
+                  支持3GP、ASF、AVI、DAT、DV、FLV、F4V、<br />
+                  GIF、M2T、M4V、MJ2、MJPEG、MKV、MOV、MP4、<br />
+                  MPE、MPG、MPEG、MTS、OGG、QT、RM、RMVB、<br />
+                  SWF、TS、VOB、WMV、WEBM 等视频格式上传
+                </div>
+                <i class="el-icon-question" />
+              </el-tooltip>
+            </el-upload>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -111,7 +136,7 @@ export default {
     return {
       saveBtnDisabled: false, // 保存按钮是否禁用
       chapterVideoList: [],
-      saveVideoBtnDisabled:false,
+      saveVideoBtnDisabled: false,
       courseId: "",
       dialogChapterFormVisible: false, //章节弹框
       chapter: {
@@ -119,13 +144,17 @@ export default {
         title: "",
         sort: 0,
       },
-      video:{
-        title:'',
-        sort:0,
-        free:0,
-        videoSourceId:'',
+      video: {
+        title: "",
+        sort: 0,
+        free: 0,
+        videoSourceId: "",
+        videoOriginalName: "", //视频名称
       },
-      dialogVideoFormVisible:false,
+      dialogVideoFormVisible: false,
+      fileList:[],//上传文件列表
+      BASE_API:process.env.BASE_API,//接口API地址
+
     };
   },
   created() {
@@ -138,105 +167,103 @@ export default {
     }
   },
   methods: {
+    handleVodUploadSuccess(response, file, fileList) {
+      this.video.videoSourceId = response.data.videoId;
+      this.video.videoOriginalName = file.name;
+    },
     //删除小节
-    removeVideo(id){
+    removeVideo(id) {
       this.$confirm("此操作将永久删除小节记录，是否继续？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       }).then(() => {
         //调用删除的方法
-          video.deleteVideo(id).then((response) => {
+        video.deleteVideo(id).then((response) => {
           //提示信息
           this.$message({
             type: "success",
             message: "删除小节成功",
           });
           //刷新页面
-          this.getChapterVideo()
+          this.getChapterVideo();
         });
       });
     },
     //编辑小节
-    openEditVideo(videoId){
-      this.dialogVideoFormVisible = true
-      video.getVideoById(videoId).then(response =>{
-        this.video = this.data.video
-        this.chapterId = video.chapterId
-        this.id = this.data.video.id
-      })
-
+    openEditVideo(videoId) {
+      this.dialogVideoFormVisible = true;
+      video.getVideoById(videoId).then((response) => {
+        this.video = this.data.video;
+        this.chapterId = video.chapterId;
+        this.id = this.data.video.id;
+      });
     },
     //添加小节
-    openVideo(chapterId){
+    openVideo(chapterId) {
       //弹框
-      this.dialogVideoFormVisible = true
+      this.dialogVideoFormVisible = true;
       //章节id
-      this.video.chapterId = chapterId
-      
+      this.video.chapterId = chapterId;
     },
-    addVideo(){
+    addVideo() {
       //课程id
-      this.video.courseId = this.courseId
-      video.addVideo(this.video).then(
-        response =>{
-          this.dialogVideoFormVisible = false
-          this.$message({
-            type:'success',
-            message:'添加小节成功'
-          })
-          this.getChapterVideo()
-          this.video={}
-        }
-      )
-    },
-    updateVideo(){
-      video.updateVideo(this.video).then(response =>{
-        this.dialogVideoFormVisible = false
+      this.video.courseId = this.courseId;
+      video.addVideo(this.video).then((response) => {
+        this.dialogVideoFormVisible = false;
         this.$message({
-          type:'success',
-          message:'修改小节成功',
-        })
-        this.getChapterVideo()
-        this.video={}
-      })
+          type: "success",
+          message: "添加小节成功",
+        });
+        this.getChapterVideo();
+        this.video = {};
+      });
     },
-    saveOrUpdateVideo(){
-      if(this.video.id){
-        this.addVideo()
-      }else{
-        this.updateVideo()
+    updateVideo() {
+      video.updateVideo(this.video).then((response) => {
+        this.dialogVideoFormVisible = false;
+        this.$message({
+          type: "success",
+          message: "修改小节成功",
+        });
+        this.getChapterVideo();
+        this.video = {};
+      });
+    },
+    saveOrUpdateVideo() {
+      if (this.video.id) {
+        this.addVideo();
+      } else {
+        this.updateVideo();
       }
-      
     },
     //删除章节
-    removeChapter(chapterId){
+    removeChapter(chapterId) {
       this.$confirm("此操作将永久删除章节记录，是否继续？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       }).then(() => {
         //调用删除的方法
-          chapter.deleteChapter(id).then((response) => {
+        chapter.deleteChapter(id).then((response) => {
           //提示信息
           this.$message({
             type: "success",
             message: "删除成功",
           });
           //刷新页面
-          this.getChapterVideo()
+          this.getChapterVideo();
         });
       });
     },
     //修改章节弹框数据回显
-    openEditChapter(id){
+    openEditChapter(id) {
       //弹框
-      this.dialogChapterFormVisible = true
+      this.dialogChapterFormVisible = true;
       //调用接口
-      chapter.getChapterById(id)
-      .then(response =>{
-        this.chapter = response.data.chapter
-      })
+      chapter.getChapterById(id).then((response) => {
+        this.chapter = response.data.chapter;
+      });
     },
     //弹出添加章节页面
     openChapterDialog() {
@@ -262,9 +289,8 @@ export default {
     },
     //修改章节
     updateChapter1() {
-      chapter.updateChapter2(this.chapter)
-            .then(response =>{
-               //关闭弹框
+      chapter.updateChapter2(this.chapter).then((response) => {
+        //关闭弹框
         this.dialogChapterFormVisible = false;
         //提示
         this.$message({
@@ -273,17 +299,17 @@ export default {
         });
         //刷新页面
         this.getChapterVideo();
-            })
+      });
     },
 
     //根据课程id查询章节和小节
     getChapterVideo() {
       chapter.getAllChapterVideo(this.courseId).then((response) => {
-        console.log("ss")
+        console.log("ss");
         this.chapterVideoList = {};
         this.chapterVideoList = response.data.allChapterVideo;
-        response.data={}
-        this.chapter ={}
+        response.data = {};
+        this.chapter = {};
       });
     },
     previous() {
@@ -296,9 +322,9 @@ export default {
     },
 
     saveOrUpdate() {
-      if(!this.chapter.id){
+      if (!this.chapter.id) {
         this.addChapter();
-      }else{
+      } else {
         this.updateChapter1();
       }
     },

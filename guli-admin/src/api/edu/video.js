@@ -19,15 +19,22 @@ export default{
     //3.删除小节
     deleteVideo(id){
         return request({
-            url:'eduservice/video/'+ id,
+            url:'/eduservice/video/'+ id,
             method:'delete',
         })
     },
     //4.查找小节
     getVideoById(id){
         return request({
-            url:'eduservice/video/getVideoInfo/'+id,
+            url:'/eduservice/video/getVideoInfo/'+id,
             method:'get',
+        })
+    },
+    //删除视频
+    deleteAliyunVod(id){
+        return request({
+            url:'/eduvod/video/removeAlyVideo/'+id,
+            method:'delete',
         })
     },
 }

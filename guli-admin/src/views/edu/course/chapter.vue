@@ -98,7 +98,7 @@
               :before-remove="beforeVodRemove"
               :on-exceed="handleUploadExceed"
               :file-list="fileList"
-              :action="BASE_API + '/admin/vod/video/upload'"
+              :action="BASE_API + '/eduvod/video/uploadAlyiVideo'"
               :limit="1"
               class="upload-demo"
             >
@@ -167,6 +167,30 @@ export default {
     }
   },
   methods: {
+    //点击❎会调用这个方法
+    beforeVodRemove(file,fileList){
+      return this.$confirm(`确定移除 ${file.name}?`);
+    },
+    //点击确定会调用此方法
+    handleVodRemove(){
+      //调用后端接口中删除视频的方法
+      video.deleteAliyunVod(this.video.videoSourceId).then(
+        response =>{
+          //提示信息
+          this.$message({
+            type:'success',
+            message:'删除视频成功',
+          });
+          //清空文件列表
+          this.fileList = []
+          this.video.videoSourceId=''
+          this.video.videoOriginalName=''
+        }
+      )
+    },
+    handleUploadExceed(){
+      this.$message.warning('如果想要重新上传视频，请先删除已经上传的视频')
+    },
     handleVodUploadSuccess(response, file, fileList) {
       this.video.videoSourceId = response.data.videoId;
       this.video.videoOriginalName = file.name;

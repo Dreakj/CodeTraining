@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 /**
  * @作者：刘子越（Derrick）
  * @创造日期：2022-08-23-上午10:29
@@ -21,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class VodController {
     @Autowired
     private VodService vodService;
+
     //上传视频到阿里云
     @PostMapping("uploadAlyiVideo")
     public R uploadAlliVideo(MultipartFile file) {
@@ -45,4 +48,10 @@ public class VodController {
         }
     }
 
+    //删除多个视频
+    @DeleteMapping("delete-batch")
+    public R deleteBatch(@RequestParam("videoIdList") List<String> videoIdList) {
+        vodService.removeMoreAlyVideo(videoIdList);
+        return R.ok();
+    }
 }

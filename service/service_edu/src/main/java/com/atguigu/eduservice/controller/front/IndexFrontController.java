@@ -7,6 +7,7 @@ import com.atguigu.eduservice.service.EduCourseService;
 import com.atguigu.eduservice.service.EduTeacherService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +20,7 @@ import java.util.List;
  * @创造日期：2022-08-31-上午11:46
  */
 @RestController
+@EnableDiscoveryClient
 @RequestMapping("/eduservice/indexfront")
 @CrossOrigin
 public class IndexFrontController {

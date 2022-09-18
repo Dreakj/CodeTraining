@@ -67,7 +67,7 @@
               @click="getCodeFun()"
               :value="codeTest"
               style="border: none; background-color: none"
-              >获取验证码</a
+              >{{codeTest}}</a
             >
           </div>
         </el-form-item>

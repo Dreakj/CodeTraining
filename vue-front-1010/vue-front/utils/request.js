@@ -6,7 +6,6 @@ const service = axios.create({
     baseURL: 'http://localhost:9001',
     timeout: 20000
 })
-export default service
 //http request拦截器
 service.interceptors.request.use(
     config => {
@@ -46,7 +45,8 @@ service.interceptors.response.use(
         }
 
     },
-    error =>{
+    error => {
         return Promise.reject(error.Promise)
     }
-)
+);
+export default service;

@@ -77,15 +77,18 @@ export default {
   layout: "sign",
   data() {
     return {
+      //封装登陆手机号和密码对象
       user: {
         mobile: "",
         password: "",
       },
+      //用户信息
       loginInfo: {},
     };
   },
   methods: {
     submitLogin() {
+      //1.调用接口返回token字符串
       loginApi.submitLogin(this.user).then((response) => {
         if (response.data.success) {
           //把token存在cookie中、也可以放在localStorage中
@@ -93,8 +96,8 @@ export default {
             domain: "localhost",
           });
           //登录成功根据token获取用户信息
-          loginApi.getLoginInfo().then((response) => {
-            this.loginInfo = response.data.data.item;
+          loginApi.getLoginUserInfo().then((response) => {
+            this.loginInfo = response.data.data.userInfo;
             //将用户信息记录cookie
             cookie.set("guli_ucenter", this.loginInfo, { domain: "localhost" });
             //跳转页面
@@ -102,6 +105,7 @@ export default {
           });
         }
       });
+      
     },
     checkPhone(rule, value, callback) {
       //debugger

@@ -139,7 +139,13 @@ import "~/assets/css/reset.css";
 import "~/assets/css/theme.css";
 import "~/assets/css/global.css";
 import "~/assets/css/web.css";
-import cookie from "js-cookie";
+import "~/assets/css/base.css";
+import "~/assets/css/activity_tab.css";
+import "~/assets/css/bottom_rec.css";
+import "~/assets/css/nice_select.css";
+import "~/assets/css/order.css";
+import "~/assets/css/swiper-3.3.1.min.css";
+import "~/assets/css/pages-weixinpay.css";
 export default {
   data() {
     return {
@@ -176,20 +182,20 @@ export default {
       //跳转页面
       window.location.href = "/";
     },
-    wxLogin(){
-      if(this.token == ''){
+    wxLogin() {
+      if (this.token == "") {
         return;
       }
       //把token存在cookie中、也可以放在localStorage中
-      cookie.set('guli_token',this.token,{domain:'localhost'})
-      cookie.set('guli_ucenter', '', {domain: 'localhost'})
+      cookie.set("guli_token", this.token, { domain: "localhost" });
+      cookie.set("guli_ucenter", "", { domain: "localhost" });
       //登录成功根据token获取用户信息
-      userApi.getLoginInfo().then(response => {
-        this.loginInfo = response.data.data.item
+      userApi.getLoginInfo().then((response) => {
+        this.loginInfo = response.data.data.item;
         //将用户信息记录cookie
-        cookie.set('guli_ucenter', this.loginInfo, {domain: 'localhost'})
-      })
-    }
+        cookie.set("guli_ucenter", this.loginInfo, { domain: "localhost" });
+      });
+    },
   },
 };
 </script>

@@ -9,10 +9,13 @@ import com.atguigu.educenter.service.UcenterMemberService;
 import com.atguigu.servicebase.exceptionhandler.GuliException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 /**
  * <p>
@@ -89,4 +92,19 @@ public class UcenterMemberServiceImpl extends ServiceImpl<UcenterMemberMapper, U
         UcenterMember ucenterMember = baseMapper.selectOne(queryWrapper);
         return ucenterMember;
     }
+
+    @Override
+    public Integer countRegisterByDay(String day) {
+        return baseMapper.selectRegisterCount(day);
+    }
+
+    //根据token字符串获取用户信息
+    @PostMapping("getInfoUc/{id}")
+    public UcenterMember getInfo(@PathVariable String id) {
+        UcenterMember ucenterMember = getByOpenid(id);
+        UcenterMember ucenterMember1 = new UcenterMember();
+        BeanUtils.copyProperties(ucenterMember, ucenterMember1);
+        return ucenterMember1;
+    }
+
 }

@@ -71,7 +71,7 @@ public class VodController {
             //调用方法得到凭证
             GetVideoPlayAuthResponse response = client.getAcsResponse(request);
             String playAuth = response.getPlayAuth();
-            return R.ok().data("playAuth", playAuth);
+            return R.ok().data("playAuth", playAuth).message("获取凭证成功");
         } catch (Exception e) {
             throw new GuliException(20001, "获取凭证失败");
         }

@@ -3,10 +3,13 @@ package com.atguigu.educenter.controller;
 
 import com.atguigu.commonutils.JwtUtils;
 import com.atguigu.commonutils.R;
+import com.atguigu.commonutils.ordervo.UcenterMemberOrder;
 import com.atguigu.educenter.entity.RegisterVo;
 import com.atguigu.educenter.entity.UcenterMember;
 import com.atguigu.educenter.service.UcenterMemberService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.netflix.hystrix.contrib.javanica.utils.CommonUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +29,8 @@ import javax.servlet.http.HttpServletRequest;
 public class UcenterMemberController {
     @Autowired
     private UcenterMemberService memberService;
+    @Autowired
+    private UcenterMemberService ucenterMemberService;
 
     //登陆
     @PostMapping("login")
@@ -47,6 +52,22 @@ public class UcenterMemberController {
         String memberId = JwtUtils.getMemberIdByJwtToken(request);
         UcenterMember member = memberService.getById(memberId);
         return R.ok().data("userInfo", member);
+    }
+
+    //根据用户id 获取用户信息
+    @PostMapping("getUserInfoOrder/{id}")
+    public UcenterMemberOrder getUserInfoOrder(@PathVariable String id) {
+        //根据用户id获取用户信息
+        UcenterMember member = memberService.getById(id);
+        UcenterMemberOrder ucenterMemberOrder = new UcenterMemberOrder();
+        BeanUtils.copyProperties(member, ucenterMemberOrder);
+        return ucenterMemberOrder;
+    }
+
+    @GetMapping("/countregister/{day}")
+    public R registerCount(@PathVariable String day) {
+        Integer count = memberService.countRegisterByDay(day);
+        return R.ok().data("countRegister", count);
     }
 
 }

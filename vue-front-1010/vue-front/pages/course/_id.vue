@@ -18,6 +18,7 @@
               :src="courseWebVo.cover"
               :alt="courseWebVo.title"
               class="dis c-v-pic"
+              height="356px"
             />
           </section>
         </article>
@@ -43,13 +44,17 @@
                 <a class="c-fff vam" title="收藏" href="#">收藏</a>
               </span>
             </section>
-            <section class="c-attr-mt">
+            <section v-if="Number(courseWebVo.price)===0 || isbuyCourse" class="c-attr-mt">
               <a href="#" title="立即观看" class="comm-btn c-btn-3">立即观看</a>
             </section>
+            <section v-else class="c-attr-mt">
+              <a @click="createOrders()"  href="#" title="立即购买" class="comm-btn c-btn-3">立即购买</a>
+            </section>
+
           </section>
         </aside>
         <aside class="thr-attr-box">
-          <ol class="thr-attr-ol clearfix">
+          <ol class="thr-attr-ol ">
             <li>
               <p>&nbsp;</p>
               <aside>
@@ -82,7 +87,7 @@
             <div class="i-box">
               <div>
                 <section id="c-i-tabTitle" class="c-infor-tabTitle c-tab-title">
-                  <a name="c-i" class="current" title="课程详情">课程详情</a>
+                  <a name="c-i" class="current" title="课程详情" >课程详情</a>
                 </section>
               </div>
               <article class="ml10 mr10 pt20">
@@ -92,7 +97,7 @@
                   </h6>
                   <div class="course-txt-body-wrap">
                     <section class="course-txt-body">
-                      <p>
+                      <p v-html="courseWebVo.description">
                         {{ courseWebVo.description }}
                       </p>
                     </section>
@@ -127,7 +132,10 @@
                                 v-for="video in chapter.children"
                                 :key="video.id"
                               >
-                                <a href="#" title>
+                                <a
+                                  :href="'/player/' + video.videoSourceId"
+                                  target="_blank"
+                                >
                                   <span class="fr" v-if="video.free === true">
                                     <i class="free-icon vam mr10">免费试听</i>
                                   </span>
@@ -219,18 +227,202 @@
       </section>
     </div>
     <!-- /主讲讲师 结束 -->
+    <div class="mt50 commentHtml">
+      <div>
+        <h6 class="c-c-content c-infor-title" id="i-art-comment">
+          <span class="commentTitle">课程评论</span>
+        </h6>
+        <section class="lh-bj-list pr mt20 replyhtml">
+          <ul>
+            <li class="unBr">
+              <aside class="noter-pic">
+                <img
+                  width="50"
+                  height="50"
+                  class="picImg"
+                  src="~/assets/img/avatar-boy.gif"
+                />
+              </aside>
+              <div class="of">
+                <section class="n-reply-wrap">
+                  <fieldset>
+                    <textarea
+                      name=""
+                      v-model="comment.content"
+                      placeholder="输入您要
+评论的文字"
+                      id="commentContent"
+                    ></textarea>
+                  </fieldset>
+                  <p class="of mt5 tar pl10 pr10">
+                    <span class="fl"
+                      ><tt
+                        class="c-red commentContentmeg"
+                        style="display: none"
+                      ></tt
+                    ></span>
+                    <input
+                      type="button"
+                      @click="addComment()"
+                      value="回复"
+                      class="lh-reply-btn"
+                    />
+                  </p>
+                </section>
+              </div>
+            </li>
+          </ul>
+        </section>
+        <section class="">
+          <section class="question-list lh-bj-list pr">
+            <ul class="pr10">
+              <li v-for="(comment, index) in data.items" v-bind:key="index">
+                <aside class="noter-pic">
+                  <img
+                    width="50"
+                    height="50"
+                    class="picImg"
+                    :src="comment.avatar"
+                  />
+                </aside>
+                <div class="of">
+                  <span class="fl">
+                    <font class="fsize12 c-blue"> {{ comment.nickname }}</font>
+                    <font class="fsize12 c-999 ml5">评论：</font></span
+                  >
+                </div>
+                <div class="noter-txt mt5">
+                  <p>{{ comment.content }}</p>
+                </div>
+                <div class="of mt5">
+                  <span class="fr"
+                    ><font class="fsize12 c-999 ml5">{{
+                      comment.gmtCreate
+                    }}</font></span
+                  >
+                </div>
+              </li>
+            </ul>
+          </section>
+        </section>
+        <!-- 公共分页 开始 -->
+        <div class="paging">
+          <!-- undisable这个class是否存在，取决于数据属性hasPrevious -->
+          <a
+            :class="{ undisable: !data.hasPrevious }"
+            href="#"
+            title="首页"
+            @click.prevent="gotoPage(1)"
+            >首</a
+          >
+          <a
+            :class="{ undisable: !data.hasPrevious }"
+            href="#"
+            title="前一页"
+            @click.prevent="gotoPage(data.current - 1)"
+            >&lt;</a
+          >
+          <a
+            v-for="page in data.pages"
+            :key="page"
+            :class="{
+              current: data.current == page,
+              undisable: data.current == page,
+            }"
+            :title="'第' + page + '页'"
+            href="#"
+            @click.prevent="gotoPage(page)"
+            >{{ page }}</a
+          >
+          <a
+            :class="{ undisable: !data.hasNext }"
+            href="#"
+            title="后一页"
+            @click.prevent="gotoPage(data.current + 1)"
+            >&gt;</a
+          >
+          <a
+            :class="{ undisable: !data.hasNext }"
+            href="#"
+            title="末页"
+            @click.prevent="gotoPage(data.pages)"
+            >末</a
+          >
+          <div class="clear" />
+        </div>
+        <!-- 公共分页 结束 -->
+      </div>
+    </div>
   </div>
 </template>
 <script>
 import courseApi from "@/api/course/";
+import comment from "@/api/commonedu";
+import orderApi from "@/api/orders"
 export default {
+  
   asyncData({ params, error }) {
-    return courseApi.getCourseInfo(params.id).then((response) => {
-      return {
-        courseWebVo: response.data.data.courseWebVo,
-        chapterVideoList: response.data.data.chapterVideoList,
-      };
-    });
+    return { courseId: params.id };
+  },
+  data() {
+    return {
+      data: {},
+      page: 1,
+      limit: 4,
+      total: 10,
+      comment: {
+        content: "",
+        courseId: "",
+      },
+      courseInfo: {},
+      chapterVideoList: [],
+      isbuyCourse: false,
+    };
+  },
+  created() {
+    this.initCourseInfo();
+    this.initComment();
+  },
+  methods: {
+    createOrders(){
+      orderApi.createOrders(this.courseId).then(
+        response =>{
+          if(response.data.success) {
+            //订单创建成功，跳转到订单页面
+            this.$route.push({path:'/order/'+response.data.data.orderId})
+          }
+        }
+      )
+    },
+    initCourseInfo() {
+      courseApi.getCourseInfo(this.courseId).then((response) => {
+        this.courseInfo = response.data.data.courseWebVo;
+        this.chapterVideoList = response.data.data.chapterVideoList;
+        this.isbuyCourse = response.data.data.isBuy;
+      });
+    },
+    initComment() {
+      comment
+        .getPageList(this.page, this, limit, this.courseId)
+        .then((response) => {
+          this.data = response.data.data;
+        });
+    },
+    addComment() {
+      this.comment.courseId = this.courseId;
+      this.comment.teacherId = this.courseInfo.teacherId;
+      comment.addComment(this.comment).then((response) => {
+        if (response.data.success) {
+          this.comment.content = "";
+          this.initComment();
+        }
+      });
+    },
+    gotoPage(page) {
+      comment.getPageList(page, this.limit, this.courseId).then((response) => {
+        this.data = response.data.data;
+      });
+    },
   },
 };
 </script>

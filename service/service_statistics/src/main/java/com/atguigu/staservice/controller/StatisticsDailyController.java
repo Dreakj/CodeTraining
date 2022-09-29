@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class StatisticsDailyController {
     @Autowired
     StatisticsDailyService dailyService;
-    @PostMapping("{day}")
+    @PostMapping("/registerCount/{day}")
     public R createStatisticsByDate(@PathVariable String day) {
         dailyService.createStatisticsByDay(day);
         return R.ok();

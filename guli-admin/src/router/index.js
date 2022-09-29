@@ -231,8 +231,29 @@ export const constantRouterMap = [
       }
     ]
   },
-
+  {
+    path: '/sta',
+    component: Layout,
+    redirect:'/sta/table',
+    name:'统计分析',
+    meta:{title:'统计分析',icon:'example'},
+    children: [
+      {
+        path: 'create',
+        name:'生成数据',
+        component:() => import('@/views/sta/create'),
+        meta: { title: '生成数据', icon: 'table' }
+      },
+      {
+        path:'show',
+        name:'图标显示',
+        component:() => import('@/views/sta/show'),
+        meta: { title: '图表显示', icon: 'tree' }
+      }
+    ]
+  },
   { path: '*', redirect: '/404', hidden: true }
+
 ]
 
 export default new Router({
